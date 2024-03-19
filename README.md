@@ -32,6 +32,7 @@ The "Provisional COVID-19 Deaths by HHS Region, Race, and Age" dataset provides 
 - Week-Ending Date: Date when the week ended.
 
 - HHS Region: Geographic region as defined by the United States Department of Health and Human Services.
+  
    --> (Classes :  United States,
         - Region 1: Connecticut, Maine, Massachusetts, New Hampshire, Rhode Island, Vermont;
         - Region 2: New Jersey, New York, New York City, Puerto Rico;
@@ -44,10 +45,11 @@ The "Provisional COVID-19 Deaths by HHS Region, Race, and Age" dataset provides 
         - Region 9: Arizona, California, Hawaii, Nevada;
         - Region 10: Alaska, Idaho, Oregon, Washington. )
 
-- Race and Hispanic Origin Group: Ethnicity and race categories including Hispanic, non-Hispanic American Indian or Alaska Native, non-Hispanic Asian, non-Hispanic Black, non-Hispanic more than one race, non-Hispanic Native Hawaiian or other Pacific Islander, non-Hispanic White, and unknown.
+- Race and Hispanic Origin Group: Ethnicity and race categories including
+  --> (Classes : Hispanic, non-Hispanic American Indian or Alaska Native, non-Hispanic Asian, non-Hispanic Black, non-Hispanic more than one race, non-Hispanic Native Hawaiian or other Pacific Islander, non-Hispanic White, and unknown.)
 
 - Age Group: Age categories ranging from 0-4 years to 85 years and over.
-  --> (Class : (0-4 years),(5-17 years),(18-29 years),(30-39years),(40-49 years),(50-64 years),(65-74 years), (75-84 years), (85 years and over))
+  --> (Classes : (0-4 years),(5-17 years),(18-29 years),(30-39years),(40-49 years),(50-64 years),(65-74 years), (75-84 years), (85 years and over))
 
 - COVID-19 Deaths: Number of deaths involving COVID-19 reported for the specified demographic group and time period.
 
