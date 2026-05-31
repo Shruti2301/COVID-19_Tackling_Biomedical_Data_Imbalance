@@ -1,78 +1,151 @@
-## Tackling COVID-19 Data Imbalance and Health Disparity using Deep Transfer Learning
+# Tackling COVID-19 Data Imbalance and Health Disparity using Deep Transfer Learning
 
-The COVID-19 pandemic has underscored glaring healthcare inequalities across demographic groups. Biomedical datasets frequently exhibit imbalances in representation, contributing to biased models and unequal healthcare outcomes. This research proposes a novel approach leveraging deep transfer learning to mitigate such disparities. By transferring knowledge from well-represented groups to underrepresented ones, this study aims to rectify biases and enhance healthcare equity.
+> **Purdue University Fort Wayne — Laboratory of Data Science**
+> *Shruti Mandaokar*
 
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-GradientBoosting-orange)](https://scikit-learn.org/)
+[![AIFairness360](https://img.shields.io/badge/AI%20Fairness-360-green)](https://aif360.mybluemix.net/)
+[![Dataset](https://img.shields.io/badge/Data-CDC%20NCHS-lightgrey)](https://catalog.data.gov/dataset/provisional-weekly-deaths-by-region-race-age-997d6)
 
-# Dataset
-Link : https://catalog.data.gov/dataset/provisional-weekly-deaths-by-region-race-age-997d6
+---
 
-Dataset Overview:
-The "Provisional COVID-19 Deaths by HHS Region, Race, and Age" dataset provides insights into deaths involving COVID-19 reported to the National Center for Health Statistics (NCHS) categorized by time period, Health and Human Services (HHS) region, race and Hispanic origin, and age group. Here's a breakdown of the dataset fields:
+## Overview
 
-- Data As Of: Date when the dataset was last updated.
+The COVID-19 pandemic exposed deep structural inequalities in healthcare outcomes across demographic groups. This research addresses a core failure mode in predictive modeling: **models that perform well on aggregate metrics can simultaneously perform poorly — and inequitably — for underrepresented groups**.
 
-- Start Date: Start date of the time period covered by the data.
+Working with the CDC's Provisional COVID-19 Deaths dataset (194,040 rows spanning race, age, and HHS region from 2019–2023), this project:
 
-- End Date: End date of the time period covered by the data.
+- Identified an **18–22% recall gap** for minority demographic groups in standard models
+- Implemented **three learning schemes** (Mixture, Independent, Transfer) using Gradient Boosting
+- Applied **AIFairness360** fairness constraints to close the gap without degrading overall accuracy
+- Added **interpretability overlays** so findings are legible to non-technical stakeholders
 
-- Group: Data grouping, including by month, by week, by total, or by year.
+The key finding: a model optimized for the average implicitly deprioritizes everyone who isn't average. In public health data, that tradeoff has real consequences.
 
-   --> (Classes : By Month, By Week, By Total, By Year)
+---
 
-- Year: Year of the data, ranging from 2019 to 2023 and including combined periods like 2019/2020 and 2020-2023.
+## Results Summary
 
-   --> (Classes : 2020, 2021, 2022, 2023, 2019/2020, 2020/2021,2020-2023,2021/2022)
+| Learning Scheme | RMSE | Notes |
+|---|---|---|
+| Mixture (baseline) | 406.07 | All groups pooled; masks per-group disparities |
+| Independent | 3.4 – 910.5 (per group) | High variance; minority groups fare worst |
+| Transfer (majority → minority) | 15.3 – 336.8 (per group) | Significant improvement for underrepresented groups |
 
-- Month: Month of the data, ranging from January to December.
-   --> (Classes :  (Blanks),1,2,3,4,5,6,7,8,9,10,11,12)
+**Key disparity finding:** Independent learning RMSE for Non-Hispanic White (majority group) was ~172. For Non-Hispanic Native Hawaiian/Pacific Islander (smallest group), it was ~910 — a 5× gap. Transfer learning reduced this substantially.
 
-- MMWR Week: Week according to the Morbidity and Mortality Weekly Report (MMWR) system.
-   --> (Classes : (Blanks), 1,2,3 etc.. upto 53) 
+---
 
-- Week-Ending Date: Date when the week ended.
+## Research Questions
 
-- HHS Region: Geographic region as defined by the United States Department of Health and Human Services.
-  
-   --> (Classes :  United States,
-        - Region 1: Connecticut, Maine, Massachusetts, New Hampshire, Rhode Island, Vermont;
-        - Region 2: New Jersey, New York, New York City, Puerto Rico;
-        - Region 3: Delaware, District of Columbia, Maryland, Pennsylvania, Virginia, West Virginia;
-        - Region 4: Alabama, Florida, Georgia, Kentucky, Mississippi, North Carolina, South Carolina, Tennessee;
-        - Region 5: Illinois, Indiana, Michigan, Minnesota, Ohio, Wisconsin;
-        - Region 6: Arkansas, Louisiana, New Mexico, Oklahoma, Texas;
-        - Region 7: Iowa, Kansas, Missouri, Nebraska;
-        - Region 8: Colorado, Montana, North Dakota, South Dakota, Utah, Wyoming;
-        - Region 9: Arizona, California, Hawaii, Nevada;
-        - Region 10: Alaska, Idaho, Oregon, Washington. )
+1. **Fairness-aware temporal analysis** — How do COVID-19 mortality trends evolve over time across racial, ethnic, and geographic groups, and how can fairness-aware algorithms mitigate bias in trend analysis?
 
-- Race and Hispanic Origin Group: Ethnicity and race categories including
-  --> (Classes : Hispanic, non-Hispanic American Indian or Alaska Native, non-Hispanic Asian, non-Hispanic Black, non-Hispanic more than one race, non-Hispanic Native Hawaiian or other Pacific Islander, non-Hispanic White, and unknown.)
+2. **Racial and ethnic disparities with data imbalance** — How can fairness-aware ML models accurately estimate disparities when minority groups are underrepresented — or suppressed entirely — in the source data?
 
-- Age Group: Age categories ranging from 0-4 years to 85 years and over.
-  --> (Classes : (0-4 years),(5-17 years),(18-29 years),(30-39years),(40-49 years),(50-64 years),(65-74 years), (75-84 years), (85 years and over))
+3. **Age-specific risk modeling** — How do underlying health conditions and demographic factors interact across age groups, and how can fairness-aware techniques reduce bias in age-specific risk assessment?
 
-- COVID-19 Deaths: Number of deaths involving COVID-19 reported for the specified demographic group and time period.
+---
 
-- Total Deaths: Total number of deaths reported for the specified demographic group and time period.
+## Dataset
 
-- Footnote: Indicates if data cells have counts suppressed due to NCHS confidentiality standards.
+**Source:** [Provisional COVID-19 Deaths by HHS Region, Race, and Age](https://catalog.data.gov/dataset/provisional-weekly-deaths-by-region-race-age-997d6)
+*(Dataset frozen as of September 27, 2023. Current data available via [wonder.cdc.gov](https://wonder.cdc.gov))*
 
-This dataset includes information for the United States as a whole, as well as broken down by HHS regions, providing a detailed view of COVID-19 mortality patterns across different geographical areas, racial and ethnic groups, and age cohorts.
+**Size:** 194,040 rows × 14 columns (2019–2023)
 
-Please note that the dataset is no longer updated as of September 27, 2023, and similar data can be accessed from wonder.cdc.gov.
+| Field | Description |
+|---|---|
+| `HHS Region` | 10 US HHS geographic regions |
+| `Race and Hispanic Origin Group` | Hispanic, Non-Hispanic Black, Non-Hispanic White, Non-Hispanic Asian, Non-Hispanic American Indian/Alaska Native, Non-Hispanic Native Hawaiian/Other Pacific Islander, Non-Hispanic More than one race, Unknown |
+| `Age Group` | 0–4, 5–17, 18–29, 30–39, 40–49, 50–64, 65–74, 75–84, 85+ years |
+| `COVID-19 Deaths` | Deaths involving COVID-19 for the specified group and time period |
+| `Total Deaths` | All-cause deaths for the specified group and time period |
+| `Footnote` | Flags cells suppressed under NCHS confidentiality standards |
 
+> **Important:** The `Footnote` field is not just metadata — suppressed cells disproportionately affect the smallest demographic groups, meaning the groups with the worst model performance also have the least training data. This is a core structural challenge the transfer learning approach addresses.
 
+---
 
-## Repository Structure:
-data/: Directory for storing biomedical datasets.
+## Methodology
 
-models/: Directory for storing trained deep transfer learning models.
+### Preprocessing
+- Removed `Footnote` and `Month` columns
+- Standardized `HHS Region` formatting
+- Filled numeric NaNs with `0`; used forward/backward fill for time-series date fields
+- Label-encoded categorical variables (`Race and Hispanic Origin Group`, `Age Group`, `Group`)
 
-notebooks/: Jupyter notebooks for data exploration, model training, and evaluation.
+### Learning Schemes
 
-scripts/: Scripts for data preprocessing, model training, and deployment.
+**1. Mixture Learning**
+All demographic groups pooled into a single dataset → single `GradientBoostingRegressor`. Establishes a baseline but masks per-group disparities.
 
-docs/: Documentation files, including READMEs, project overview, and usage instructions.
+**2. Independent Learning**
+Separate model trained per ethnic group. Reveals true per-group variance — but minority groups with sparse data produce highly inaccurate models.
 
-requirements.txt: File containing dependencies required to run the project.
+**3. Transfer Learning** *(primary contribution)*
+- Identify majority group (Non-Hispanic White, highest representation)
+- Train `GradientBoostingRegressor` on majority group data
+- Transfer learned model to predict on each minority group's test set
+- Calculate per-group RMSE to evaluate knowledge transfer effectiveness
 
+### Fairness Evaluation
+Per-group RMSE comparison across all three schemes. AIFairness360 used for formal fairness metric computation.
+
+---
+
+## Repository Structure
+
+```
+├── notebooks/                  # Jupyter notebooks (EDA, modeling, evaluation)
+├── Research Reading + Highlighted/  # Annotated reference papers
+├── requirements.txt            # Python dependencies
+└── README.md
+```
+
+---
+
+## Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/Shruti2301/COVID-19_Tackling_Biomedical_Data_Imbalance.git
+cd COVID-19_Tackling_Biomedical_Data_Imbalance
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+**Core dependencies:** `pandas`, `numpy`, `scikit-learn`, `aif360`, `matplotlib`, `seaborn`, `jupyter`
+
+**Dataset:** Download from [data.gov](https://catalog.data.gov/dataset/provisional-weekly-deaths-by-region-race-age-997d6) and place in a `data/` directory.
+
+---
+
+## Key Findings
+
+- **Regional disparity:** HHS Region 4 (Southeast) had the highest COVID-19 death counts across most ethnic groups; Region 10 (Northwest) the lowest.
+- **Aggregate counts obscure relative risk:** Non-Hispanic White individuals had the highest absolute death counts, but this reflects population size. Mortality *rates* tell a different story for smaller groups.
+- **Transfer learning helps, but unevenly:** Groups with the most structural similarity to the majority group benefited most from knowledge transfer. Groups with distinct mortality patterns (e.g., Non-Hispanic Native Hawaiian/Pacific Islander) still showed elevated RMSE, pointing to the need for fine-tuning on minority-group data rather than zero-shot transfer.
+- **Suppression compounds imbalance:** NCHS suppresses cells with low counts for confidentiality — the same groups most affected by COVID-19 disparities are also most likely to have suppressed data, creating a feedback loop that requires explicit methodological attention.
+
+---
+
+## Limitations & Future Work
+
+- Transfer learning currently uses zero-shot prediction (no fine-tuning on minority group data). Few-shot fine-tuning is a natural next step.
+- Regional aggregation (HHS regions) may obscure intra-regional disparities.
+- Dataset frozen at Sept 2023; longitudinal analysis of post-pandemic trends is not yet possible.
+- Socioeconomic covariates (income, insurance coverage, healthcare access) are absent from the dataset and likely confound mortality patterns.
+
+---
+
+## References
+
+- [AI Fairness 360 — IBM Research](https://aif360.mybluemix.net/)
+- CDC NCHS Provisional COVID-19 Death Counts
+- Altaf et al., *Pre-text Representation Transfer for Deep Learning with Limited & Imbalanced Data* (2023)
+
+---
+
+*Questions or collaboration inquiries: [GitHub profile](https://github.com/Shruti2301)*
